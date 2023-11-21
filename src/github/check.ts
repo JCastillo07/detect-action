@@ -107,7 +107,7 @@ export class GitHubCheck {
       core.info(`${this.checkName} updated`)
     }
   }
-
+  
   private async truncateCheckText(text: string) {
     debug('Checking text size...')
     let truncated = ''
