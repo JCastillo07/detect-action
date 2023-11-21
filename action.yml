@@ -1,15 +1,20 @@
-name: 'Detect Rapid Scan Action'
+name: 'Synopsys Detect Scan Action'
 branding:
   icon: 'shield'
   color: 'purple'
-description: 'A GitHub action to perform a Detect rapid scan and record the results'
+description: 'A GitHub action to perform a Black Duck Detect scan and record the results'
 inputs:
   github-token:
     description: 'Your GitHub token'
     required: true
   detect-version:
-    description: 'The version of Detect to download'
-    required: true
+    description: |-
+      Detect version to be used on Black Duck scan.
+      The following input patterns are allowed:
+        - A full version (e.g. 8.4.0) to scan using that exact version.
+        - A major version (e.g. 8) to scan using the latest version of the given major.
+        - Empty or not specified, to scan using the latest version of Detect.
+    required: false
   blackduck-url:
     description: 'Url of Black Duck instance'
     required: true
@@ -17,19 +22,40 @@ inputs:
     description: 'API Token for Black Duck instance'
     required: true
   scan-mode:
-    description: 'Either RAPID or INTELLIGENT, configures how Detect is invoked. RAPID will not persist the results and disables select Detect functionality for faster results. INTELLIGENT persists the results and permits all features of Detect.'
+    description: |-
+      Configures how Detect is invoked. When specified use one of the following:
+        - RAPID: will not persist the results and disables selected Detect functionality for faster results.
+        - INTELLIGENT: persists the results and allows all features of Detect.
     required: false
     default: 'RAPID'
   fail-on-all-policy-severities:
-    description: 'By default, Detect will only fail on policy violations with BLOCKER or CRITICAL severities. This flag will cause the action to fail on all policy severities.'
+    description: |-
+      By default, Detect will only fail on policy violations with BLOCKER or CRITICAL severities.
+      This flag will cause the action to fail on all policy severities.
     required: false
-    default: false
+    default: 'false'
   output-path-override:
     description: 'Override for where to output Detect files, default is $RUNNER_TEMP/blackduck/'
     required: false
   detect-trust-cert:
-    description: 'Acceptable Values: TRUE, FALSE. If TRUE, Detect will trust the Black Duck certificate even if the certificate is not in the keystore.'
-    default: 'TRUE'
+    description: |-
+      When set to true Detect will trust the Black Duck certificate
+      even if the certificate is not in the keystore.
+    required: false
+    default: 'true'
+  fail-if-detect-fails:
+    description: 'Fail the action if detect exits with an error code'
+    required: false
+    default: 'false'
+  comment-pr-on-success:
+    description: 'Comment pull requests if no violations found'
+    required: false
+    default: 'true'
+outputs:
+  detect-exit-code:
+    description: 'A number indicating Detect exit code'
+  detect-exit-code-name:
+    description: 'The corresponding human name of the error code'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
